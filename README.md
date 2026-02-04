@@ -1,5 +1,10 @@
 # TCW1 - Interactive Payment Wallet
 
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3.3-blue.svg)
+
 A full-stack interactive web application for managing cryptocurrency and PayPal payments with wallet functionality.
 
 ---
@@ -117,7 +122,16 @@ Get up and running in 3 simple steps:
 ## Installation
 
 ### Prerequisites
-- Node.js 18+ and npm
+
+Before you begin, ensure you have the following installed:
+- **Node.js** (version 18.0.0 or higher)
+- **npm** (comes with Node.js)
+
+You can verify your installations by running:
+```bash
+node --version  # Should output v18.0.0 or higher
+npm --version   # Should output a version number
+```
 
 ### Backend Setup
 
@@ -126,12 +140,16 @@ cd backend
 npm install
 ```
 
-Create a `.env` file (optional, defaults work for demo):
+**Environment Configuration (Optional)**
+
+Create a `.env` file for custom configuration:
 ```bash
 cp .env.example .env
 ```
 
-Start the backend server:
+> **Note:** The application works out-of-the-box with default values. Custom environment variables are optional for demo purposes.
+
+**Start the backend server:**
 ```bash
 npm run dev
 ```
@@ -177,6 +195,8 @@ The app will be available at `http://localhost:3000`
 3. **Send Payment** - Transfer funds to another user ID
 4. **View Balance** - See your current balance for all currencies
 5. **Check History** - Review all your transactions
+
+> **💡 Tip:** Try opening the app in multiple browser tabs or windows with different user IDs to test sending payments between users in real-time!
 
 ---
 
@@ -225,6 +245,22 @@ For production use, implement:
 ---
 
 ## Development
+
+### Development Mode
+
+Both frontend and backend support hot-reloading during development:
+
+**Backend (with auto-restart on file changes):**
+```bash
+cd backend
+npm run watch
+```
+
+**Frontend (already includes hot-reloading):**
+```bash
+cd frontend
+npm run dev
+```
 
 ### Building for Production
 

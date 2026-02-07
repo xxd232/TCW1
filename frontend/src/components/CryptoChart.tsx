@@ -59,7 +59,7 @@ const CryptoChart: React.FC = () => {
     setTimeout(() => setAnimatingIndex(null), 600);
   };
 
-  const generateSparkline = (index: number): string => {
+  const generateSparkline = (): string => {
     const points: number[] = [];
     for (let i = 0; i < 20; i++) {
       points.push(Math.random() * 100);
@@ -109,7 +109,7 @@ const CryptoChart: React.FC = () => {
 
               <svg className="sparkline" viewBox="0 0 100 40" preserveAspectRatio="none">
                 <polyline
-                  points={generateSparkline(index)}
+                  points={generateSparkline()}
                   fill="none"
                   stroke={crypto.change24h >= 0 ? '#00FF00' : '#FF4444'}
                   strokeWidth="2"

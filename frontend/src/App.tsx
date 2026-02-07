@@ -14,8 +14,6 @@ import { api } from './services/api';
 import { Currency } from './types';
 import './App.css';
 
-const logoPath = new URL('./assets/tcw1-logo.svg', import.meta.url).href;
-
 interface Friend {
   id: string;
   name?: string;

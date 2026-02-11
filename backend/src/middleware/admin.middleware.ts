@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken } from './auth.middleware';
+import { authService } from '../services/auth.service';
+import { User } from '../models/User';
 
 export interface AuthenticatedRequest extends Request {
   userId?: string;
@@ -12,18 +13,23 @@ export const adminMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    // First verify the token
-    const result = verifyToken(req);
-    
-    if (!result) {
-      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    // Verify token
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No token provided' });
     }
 
-    req.userId = result.userId;
+    const decoded = authService.verifyToken(token);
 
-    // Import User model here to avoid circular dependency
-    const { User } = require('../models/User');
-    const user = await User.findById(result.userId);
+    if (!decoded) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    }
+
+    req.userId = decoded.userId;
+
+    // Check if user is admin
+    const user = await User.findById(decoded.userId);
 
     if (!user || !user.isAdmin) {
       return res.status(403).json({ success: false, message: 'Admin access required' });

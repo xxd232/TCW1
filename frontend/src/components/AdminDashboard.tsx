@@ -35,7 +35,6 @@ export const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const token = localStorage.getItem('tcw1_token');
 
   useEffect(() => {

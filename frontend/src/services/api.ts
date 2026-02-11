@@ -1,9 +1,18 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Wallet, Transaction, Currency, CryptoPrices } from '../types';
 
 const API_BASE_URL = '/api';
 
 export const api = {
+  // Generic POST helper for auth and other endpoints
+  async post<T = any, D = any>(
+    url: string,
+    data?: D,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
+    return axios.post(`${API_BASE_URL}${url}`, data, config);
+  },
+
   // Get wallet balance
   async getBalance(userId: string): Promise<Wallet> {
     const response = await axios.get(`${API_BASE_URL}/wallet/${userId}/balance`);

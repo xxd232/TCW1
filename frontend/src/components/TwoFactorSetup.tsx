@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import Modal from './Modal';
 import Loading from './Loading';
@@ -22,6 +22,8 @@ export const TwoFactorSetup = ({ isOpen, token, onClose, onSuccess }: TwoFactorS
   const setupTwoFactor = async () => {
     try {
       setLoading(true);
+      setError('');
+      setCopiedCodes(false);
       const response = await api.post(
         '/auth/2fa/setup',
         {},
@@ -82,9 +84,11 @@ export const TwoFactorSetup = ({ isOpen, token, onClose, onSuccess }: TwoFactorS
   const handleClose = () => {
     setStep('qr');
     setQrCode('');
+    setBackupCodes([]);
     setTotpToken('');
     setError('');
     setLoading(true);
+    setCopiedCodes(false);
     onClose();
   };
 
@@ -94,6 +98,12 @@ export const TwoFactorSetup = ({ isOpen, token, onClose, onSuccess }: TwoFactorS
     setCopiedCodes(true);
     setTimeout(() => setCopiedCodes(false), 2000);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      setupTwoFactor();
+    }
+  }, [isOpen, token]);
 
   if (!isOpen) return null;
 

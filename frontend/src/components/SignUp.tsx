@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import '../styles/SignUp.css';
 
-const SignUp = () => {
+interface SignUpProps {
+  onSignUp?: (userId: string, email: string) => void;
+}
+
+const SignUp = ({ onSignUp }: SignUpProps) => {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -50,6 +54,12 @@ const SignUp = () => {
         localStorage.setItem('tcw1_token', response.data.token);
         localStorage.setItem('tcw1_user', JSON.stringify(response.data.user));
         localStorage.setItem('isAdmin', response.data.user.isAdmin ? 'true' : 'false');
+        const userId =
+          response.data.user?._id ||
+          response.data.user?.id ||
+          response.data.user?.email ||
+          email;
+        onSignUp?.(userId, email);
         navigate('/');
       } else {
         setError(response.data.message || 'Signup failed');

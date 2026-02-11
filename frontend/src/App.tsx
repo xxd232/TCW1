@@ -1,4 +1,5 @@
 ﻿import { useEffect, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { WalletDashboard } from './components/WalletDashboard';
 import { SendPayment } from './components/SendPayment';
 import { ReceivePayment } from './components/ReceivePayment';
@@ -24,7 +25,7 @@ interface Friend {
 
 function App() {
   const { showToast } = useToast();
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+  const [isLoggedIn] = useState(() => {
     // Check if user is already logged in from localStorage
     return !!localStorage.getItem('tcw1_user');
   });
@@ -48,7 +49,6 @@ function App() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [transactionLoading, setTransactionLoading] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
 
   const handleTransactionSuccess = () => {
     // Trigger refresh of wallet and transactions
@@ -138,45 +138,9 @@ function App() {
     }
   };
 
-  const handleSignUp = (username: string, email: string) => {
-    // Store user info in localStorage
-    localStorage.setItem('tcw1_user', JSON.stringify({ username, email }));
-    setUserId(username);
-    setIsLoggedIn(true);
-  };
-
-  // Show auth page if not logged in
+  // Redirect to login if not logged in
   if (!isLoggedIn) {
-    return (
-      <div className="auth-wrapper">
-        <div className="auth-toggle">
-          <button
-            className={authMode === 'login' ? 'active' : ''}
-            onClick={() => setAuthMode('login')}
-          >
-            Login
-          </button>
-          <button
-            className={authMode === 'signup' ? 'active' : ''}
-            onClick={() => setAuthMode('signup')}
-          >
-            Sign Up
-          </button>
-        </div>
-
-        {authMode === 'login' ? (
-          <Login
-            onLoginSuccess={() => setIsLoggedIn(true)}
-            onShowSignUp={() => setAuthMode('signup')}
-          />
-        ) : (
-          <SignUp
-            onSignUp={handleSignUp}
-            onShowLogin={() => setAuthMode('login')}
-          />
-        )}
-      </div>
-    );
+    return <Navigate to="/login" replace />;
   }
 
   return (
@@ -690,9 +654,58 @@ function App() {
 function AppWrapper() {
   return (
     <ToastProvider>
-      <App />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/logout" element={<LogoutPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </ToastProvider>
   );
+}
+
+function LoginPage() {
+  const navigate = useNavigate();
+  return (
+    <div className="auth-wrapper">
+      <Login
+        onLoginSuccess={() => navigate('/')}
+        onShowSignUp={() => navigate('/signup')}
+      />
+    </div>
+  );
+}
+
+function SignUpPage() {
+  const navigate = useNavigate();
+  const handleSignUp = (userId: string, email: string) => {
+    localStorage.setItem('tcw1_user', JSON.stringify({ username: userId, email }));
+    navigate('/');
+  };
+
+  return (
+    <div className="auth-wrapper">
+      <SignUp
+        onSignUp={handleSignUp}
+        onShowLogin={() => navigate('/login')}
+      />
+    </div>
+  );
+}
+
+function LogoutPage() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    localStorage.removeItem('tcw1_token');
+    localStorage.removeItem('tcw1_user');
+    localStorage.removeItem('isAdmin');
+    navigate('/login', { replace: true });
+  }, [navigate]);
+
+  return <Loading type="spinner" size="medium" text="Logging out..." />;
 }
 
 export default AppWrapper;

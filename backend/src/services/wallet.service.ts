@@ -15,6 +15,7 @@ export class WalletService {
         USDT: 0,
         ETH: 0,
         PAYPAL: 0,
+        USD: 0,
       },
     };
     wallets.set(userId, wallet);
@@ -31,13 +32,13 @@ export class WalletService {
   }
 
   // Get balance for specific currency
-  getBalance(userId: string, currency: 'BTC' | 'USDT' | 'ETH' | 'PAYPAL'): number {
+  getBalance(userId: string, currency: 'BTC' | 'USDT' | 'ETH' | 'PAYPAL' | 'USD'): number {
     const wallet = this.getWallet(userId);
     return wallet ? wallet.balances[currency] : 0;
   }
 
   // Add funds to wallet (for testing/deposit simulation)
-  addFunds(userId: string, currency: 'BTC' | 'USDT' | 'ETH' | 'PAYPAL', amount: number): boolean {
+  addFunds(userId: string, currency: 'BTC' | 'USDT' | 'ETH' | 'PAYPAL' | 'USD', amount: number): boolean {
     const wallet = this.getWallet(userId);
     if (wallet && amount > 0) {
       wallet.balances[currency] += amount;

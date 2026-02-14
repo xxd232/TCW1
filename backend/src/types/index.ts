@@ -12,6 +12,7 @@ export interface Wallet {
     USDT: number;
     ETH: number;
     PAYPAL: number;
+    USD: number; // Fiat balance from banking
   };
 }
 
@@ -40,4 +41,41 @@ export interface PayPalPayment {
   currency: string;
   description: string;
   recipientEmail: string;
+}
+
+export interface BankAccount {
+  id: string;
+  userId: string;
+  accountNumber: string;
+  routingNumber: string;
+  accountType: 'checking' | 'savings';
+  bankName: string;
+  accountHolderName: string;
+  isVerified: boolean;
+  isPrimary: boolean;
+  createdAt: Date;
+  lastUsed?: Date;
+}
+
+export interface BankTransaction {
+  id: string;
+  userId: string;
+  bankAccountId: string;
+  type: 'deposit' | 'withdrawal';
+  amount: number;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  transferType: 'ACH' | 'WIRE';
+  description?: string;
+  timestamp: Date;
+  completedAt?: Date;
+  failureReason?: string;
+}
+
+export interface BankTransferRequest {
+  userId: string;
+  bankAccountId: string;
+  amount: number;
+  type: 'deposit' | 'withdrawal';
+  transferType: 'ACH' | 'WIRE';
+  description?: string;
 }

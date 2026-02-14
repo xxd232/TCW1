@@ -10,6 +10,7 @@ import paypalRoutes from './routes/paypal.routes';
 import authRoutes from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
 import blockchainRoutes from './routes/blockchain.routes';
+import bankingRoutes from './routes/banking.routes';
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +59,7 @@ app.use('/api/wallet', walletRoutes);
 app.use('/api/paypal', paypalRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blockchain', blockchainRoutes);
+app.use('/api/banking', bankingRoutes);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -71,6 +73,7 @@ app.get('/', (req: Request, res: Response) => {
       paypal: '/api/paypal',
       admin: '/api/admin',
       blockchain: '/api/blockchain',
+      banking: '/api/banking',
     },
   });
 });

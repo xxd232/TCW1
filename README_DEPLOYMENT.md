@@ -1,19 +1,18 @@
 # 🚀 TCW1 Deployment Guide - Complete Instructions
 
-**Hosting TCW1 on Azure with Cloudflare Domain + Microsoft Email**
+**Hosting TCW1 with Cloudflare Domain**
 
 ---
 
 ## 📖 Documentation Files Included
 
-You have been provided with **4 deployment guides** in your project:
+You have been provided with **deployment guides** in your project:
 
 | File | Purpose | Read Time |
 |------|---------|-----------|
 | **QUICK_START.md** | Fast 30-minute setup checklist | 5 min |
 | **DEPLOYMENT.md** | Detailed deployment instructions | 15 min |
 | **CLOUDFLARE_SETUP.md** | DNS configuration & email setup | 10 min |
-| **azure-deploy.json** | Configuration reference | Reference |
 
 ### 💡 **Start Here:**
 1. **First time?** → Read **QUICK_START.md** ⚡
@@ -39,12 +38,12 @@ Internet
    ↓
 Cloudflare (DNS Proxy)
    ↓
-Azure App Service (HTTPS)
+Your Hosting Provider (HTTPS)
    ↓
 ├─ Frontend (React 18 + Vite)
 ├─ Backend (Node.js 18 + Express)
 ├─ WebSocket (Socket.io)
-└─ Email (Microsoft/Azure Communication)
+└─ Email (SMTP/Email Service)
 ```
 
 ---
@@ -55,9 +54,6 @@ Azure App Service (HTTPS)
 ```bash
 # Check Node.js version
 node --version  # Should be v18+
-
-# Check Azure CLI
-az --version    # If missing: winget install Microsoft.AzureCLI
 
 # Check your domain
 # Log into https://dash.cloudflare.com
@@ -74,27 +70,22 @@ cd backend && npm install && cd ..
 cd frontend && npm install && cd ..
 ```
 
-### **Step 3: Deploy (One Command)**
+### **Step 3: Build Your Applications**
 ```bash
-# Login to Azure
-az login
-
-# Deploy everything
+# Build everything
 bash deploy.sh both
 
-# ✅ Done! Your apps are now deployed
-# Note URLs:
-# - Backend: https://tcw1-backend.azurewebsites.net
-# - Frontend: https://tcw1-frontend.azurewebsites.net
+# ✅ Done! Your apps are now built
+# Deploy the dist/ folders to your hosting provider
 ```
 
 ### **Step 4: Configure Your Domain**
 Go to https://dash.cloudflare.com and add these DNS records:
 
 ```
-🟠 CNAME    www  →  tcw1-frontend.azurewebsites.net
-🟠 CNAME    api  →  tcw1-backend.azurewebsites.net
-🟠 CNAME    @    →  tcw1-frontend.azurewebsites.net
+🟠 CNAME    www  →  your-frontend-host.provider.com
+🟠 CNAME    api  →  your-backend-host.provider.com
+🟠 CNAME    @    →  your-frontend-host.provider.com
 ```
 
 **Wait 10-30 minutes for DNS to propagate**, then test:
@@ -120,9 +111,9 @@ https://api.yourdomain.com  # Should show {"status":"ok"}
 └─────────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────────┐
-│                    AZURE CLOUD                              │
+│                YOUR HOSTING PROVIDER                         │
 ├─────────────────────────────────────────────────────────────┤
-│ App Service (Backend)     │  App Service (Frontend)         │
+│ Backend Service           │  Frontend Service               │
 │ ├─ Port 3001              │  ├─ Port 3000 (React)          │
 │ ├─ Node.js 18             │  ├─ Node.js 18                 │
 │ ├─ Express API            │  ├─ Vite Dev Server            │
@@ -133,9 +124,9 @@ https://api.yourdomain.com  # Should show {"status":"ok"}
 ┌─────────────────────────────────────────────────────────────┐
 │                  CLOUDFLARE (DNS)                           │
 ├─────────────────────────────────────────────────────────────┤
-│ yourdomain.com       → tcw1-frontend.azurewebsites.net      │
-│ api.yourdomain.com   → tcw1-backend.azurewebsites.net       │
-│ noreply@yourdomain   → Microsoft 365 / Outlook             │
+│ yourdomain.com       → your-frontend-host.provider.com      │
+│ api.yourdomain.com   → your-backend-host.provider.com       │
+│ noreply@yourdomain   → Your Email Service                   │
 └─────────────────────────────────────────────────────────────┘
                            ↓
                       INTERNET USERS
@@ -156,15 +147,19 @@ CORS_ORIGIN=https://yourdomain.com
 
 # Email - Choose one option:
 
-# Option 1: Azure Communication Services (RECOMMENDED)
-AZURE_COMMUNICATION_CONNECTION_STRING=endpoint=https://...;accesskey=...
+# Option 1: SMTP (Gmail, Outlook, etc.)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your_app_password
 SENDER_EMAIL=noreply@yourdomain.com
 
-# Option 2: Outlook/Microsoft 365
-SMTP_HOST=smtp-mail.outlook.com
-SMTP_PORT=587
-SMTP_USER=your-email@outlook.com
-SMTP_PASSWORD=your_app_password
+# Option 2: SendGrid
+SENDGRID_API_KEY=your_api_key
+
+# Option 3: Mailgun
+MAILGUN_API_KEY=your_api_key
+MAILGUN_DOMAIN=your_domain
 ```
 
 ### Frontend (.env.production)
@@ -185,16 +180,16 @@ VITE_ENVIRONMENT=production
 ```
 Check:
 1. Browser console (F12) for CORS errors
-2. Azure App Service > Log Stream
+2. Hosting provider logs
 3. Verify CORS_ORIGIN matches your domain
 
 Fix:
 # Set correct CORS_ORIGIN
-Azure Portal → tcw1-backend → Configuration → CORS_ORIGIN
-= https://yourdomain.com
+Check your hosting provider's environment variable settings
+Set CORS_ORIGIN = https://yourdomain.com
 
 # Restart app
-App Service > Restart
+Restart your hosting service
 ```
 
 ### Problem: "Login/Signup fails"
@@ -206,48 +201,44 @@ Check:
 
 Fix:
 # Set correct VITE_API_URL
-Azure Portal → tcw1-frontend → Configuration → VITE_API_URL
-= https://api.yourdomain.com
+Update environment variable to: https://api.yourdomain.com
 
-# Restart app
-App Service > Restart
+# Rebuild and redeploy frontend
+cd frontend && npm run build
 ```
 
 ### Problem: "Can't reach api.yourdomain.com"
 ```
 Check:
 1. nslookup api.yourdomain.com
-   (should show tcw1-backend.azurewebsites.net)
+   (should show your hosting provider's domain)
 
 2. Wait for DNS (can take 24 hours)
    https://dnschecker.org (check propagation)
 
-3. Cloudflare is set to "DNS only" (not orange cloud)
+3. Cloudflare is configured correctly
 ```
 
 ### Problem: "SSL certificate not found"
 ```
 Fix:
-1. Azure Portal → tcw1-frontend
-2. TLS/SSL settings → Create managed certificate
-3. Custom domains → Add yourdomain.com
-4. Bindings → HTTPS binding
+Most hosting providers (Vercel, Netlify, Railway) automatically
+provide SSL certificates. Check your hosting provider's documentation.
 
-Wait 10-15 minutes for certificate generation
+For Cloudflare: SSL/TLS > Full (Strict)
 ```
 
 ### Problem: "Email not sending"
 ```
 Check:
-1. Verify connection string in App Service config
-2. Test SMTP credentials if using Outlook
+1. Verify SMTP credentials in environment variables
+2. Test SMTP credentials independently
 3. Check spam folder
-4. Review app logs: App Service > Log Stream
+4. Review app logs from hosting provider
 
-If using Azure Communication Services:
-- Verify sender email in resource
-- Confirm in correct region
-- Check quota limits
+For Gmail:
+- Enable "Less secure app access" or use App Passwords
+- Verify 2FA is set up if using App Passwords
 ```
 
 ---
@@ -259,14 +250,15 @@ If using Azure Communication Services:
 # Status
 curl https://api.yourdomain.com/health
 
-# View Logs (Azure Portal)
-App Service > Log Stream
+# View Logs
+Check your hosting provider's log viewing interface
 
 # Monitor Performance
-App Service > Metrics > Response time, CPU, Memory
+Use your hosting provider's metrics dashboard
+Track: Response time, CPU, Memory
 
 # Set Alerts
-Monitoring > Alerts > Create alert rule
+Configure alerts through your hosting provider
 ```
 
 ### Common Monitoring Points
@@ -281,18 +273,18 @@ Monitoring > Alerts > Create alert rule
 
 ## 💰 Cost Estimation
 
-### Azure (Monthly)
-- **App Service Plan (F1 Free):** $0
-- **Storage:** ~$1
-- **Application Insights:** ~$1 (first 1GB free)
-- **Communication Services:** Pay as you go (~$0.002 per email)
-- **Total:** $15-30/month
+### Hosting Options
+- **Vercel/Netlify (Frontend):** Free tier available, then $20/month
+- **Railway/Render (Backend):** Free tier available, then $5-20/month
+- **SendGrid (Email):** Free tier (100 emails/day), then $15/month
+- **Database (MongoDB Atlas):** Free tier available, then $9/month
+- **Total:** $0-50/month depending on usage
 
 ### Cloudflare
 - **Free Plan:** $0 (DNS only)
 - **Pro Plan:** $20/month (with advanced features)
 
-**Total Estimated Cost:** $20-50/month
+**Total Estimated Cost:** $0-70/month
 
 ---
 
@@ -300,12 +292,12 @@ Monitoring > Alerts > Create alert rule
 
 ### ✅ Do This
 - [x] Use HTTPS only
-- [x] Store secrets in Azure Key Vault (not .env)
+- [x] Store secrets in environment variables (not .env files)
 - [x] Enable firewall rules
 - [x] Set CORS to specific domain only
 - [x] Use environment-specific configs
 - [x] Add rate limiting to API
-- [x] Enable MFA for Azure account
+- [x] Enable MFA for hosting accounts
 
 ### ❌ Don't Do This
 - [ ] Commit .env files to git
@@ -326,8 +318,8 @@ Monitoring > Alerts > Create alert rule
 - [ ] Get SSL working correctly
 
 ### Week 2: Optimize
-- [ ] Set up auto-scaling
-- [ ] Enable Application Insights
+- [ ] Set up auto-scaling (if available)
+- [ ] Enable application monitoring
 - [ ] Configure database backups
 - [ ] Set up CI/CD pipeline
 
@@ -343,7 +335,6 @@ Monitoring > Alerts > Create alert rule
 
 | Issue | Resource |
 |-------|----------|
-| **Azure Questions** | https://docs.microsoft.com/azure/ |
 | **Cloudflare DNS** | https://developers.cloudflare.com/dns/ |
 | **Node.js + Express** | https://expressjs.com/docs |
 | **React/Vite** | https://vitejs.dev/guide/ |
@@ -355,13 +346,13 @@ Monitoring > Alerts > Create alert rule
 
 Before going live, verify:
 
-- [ ] Azure account created & logged in
+- [ ] Hosting provider account created
 - [ ] TCW1 project cloned locally
-- [ ] Backend & frontend apps deployed to Azure
-- [ ] Cloudflare domain points to Azure
+- [ ] Backend & frontend apps deployed
+- [ ] Cloudflare domain configured
 - [ ] DNS records added (CNAME for api, www, @)
 - [ ] CORS_ORIGIN set to your domain
-- [ ] SSL certificate created
+- [ ] SSL certificate active
 - [ ] Email configuration complete
 - [ ] Health check working: curl https://api.yourdomain.com/health
 - [ ] App loads when visiting: https://yourdomain.com
@@ -389,8 +380,8 @@ Once all checklist items are complete, your TCW1 app is **production-ready**!
 Your app is now:
 - ✅ Accessible from anywhere
 - ✅ Using professional domain
-- ✅ Sending emails through Microsoft
-- ✅ Running on Azure's secure servers
+- ✅ Sending emails through your service
+- ✅ Running on secure hosting
 - ✅ Backed by Cloudflare's global CDN
 
 ---
@@ -400,4 +391,4 @@ Your app is now:
 - DEPLOYMENT.md (comprehensive guide)
 - CLOUDFLARE_SETUP.md (DNS & email)
 
-**Ready to deploy?** Run: `bash deploy.sh both` 🚀
+**Ready to build?** Run: `bash deploy.sh both` 🚀

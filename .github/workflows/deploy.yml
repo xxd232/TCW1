@@ -1,5 +1,4 @@
----
-name: Deploy to Azure
+name: Build and Test
 
 'on':
   push:
@@ -9,78 +8,42 @@ name: Deploy to Azure
 
 env:
   REGISTRY: ghcr.io
-  BACKEND_APP_NAME: tcw1-backend
-  FRONTEND_APP_NAME: tcw1-frontend
-  AZURE_RESOURCE_GROUP: tcw1-rg
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      # Backend Build
-      - name: Build Backend
-        run: |
-          cd backend
-          npm ci
-          npm run build
-          cd ..
-
-      # Frontend Build
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm ci
-          npm run build
-          cd ..
-
-      # Login to Azure
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      # Deploy Backend to App Service
-      - name: Deploy Backend
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.BACKEND_APP_NAME }}
-          package: backend/dist
-          slot-name: production
-
-      # Deploy Frontend to App Service
-      - name: Deploy Frontend
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.FRONTEND_APP_NAME }}
-          package: frontend/dist
-          slot-name: production
-
-      # Verify Deployment
-      - name: Verify Backend
-        run: |
-          BACKEND_URL="https://${{ env.BACKEND_APP_NAME }}"
-          BACKEND_URL="${BACKEND_URL}.azurewebsites.net/health"
-          curl -f "${BACKEND_URL}" || exit 1
-
-      - name: Notify Success
-        if: success()
-        run: |
-          echo "✅ Deployment successful!"
-          BACKEND="https://${{ env.BACKEND_APP_NAME }}.azurewebsites.net"
-          FRONTEND="https://${{ env.FRONTEND_APP_NAME }}.azurewebsites.net"
-          echo "Backend: ${BACKEND}"
-          echo "Frontend: ${FRONTEND}"
-
-      - name: Notify Failure
-        if: failure()
-        run: |
-          echo "❌ Deployment failed!"
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    # Backend Build
+    - name: Build Backend
+      run: |
+        cd backend
+        npm ci
+        npm run build
+        cd ..
+    
+    # Frontend Build
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm ci
+        npm run build
+        cd ..
+    
+    - name: Build Complete
+      if: success()
+      run: |
+        echo "✅ Build successful!"
+    
+    - name: Build Failed
+      if: failure()
+      run: |
+        echo "❌ Build failed!"

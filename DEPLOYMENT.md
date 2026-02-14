@@ -1,41 +1,24 @@
 # TCW1 Deployment Configuration
 
-## 🚀 QUICK START - Deploy to Azure App Service
+## 🚀 QUICK START - General Deployment Guide
 
 ### Prerequisites
-1. Azure account (free tier available)
+1. Hosting provider account (e.g., Vercel, Netlify, Railway, etc.)
 2. Cloudflare domain
 3. Node.js 18+ installed locally
 
-### Step 1: Create Azure App Service
+### Step 1: Build Your Applications
 
 ```bash
-# Login to Azure CLI
-az login
+# Build backend
+cd backend
+npm ci
+npm run build
 
-# Create resource group
-az group create --name tcw1-rg --location eastus
-
-# Create App Service Plan (free tier)
-az appservice plan create \
-  --name tcw1-plan \
-  --resource-group tcw1-rg \
-  --sku F1 \
-  --is-linux
-
-# Create backend app
-az webapp create \
-  --resource-group tcw1-rg \
-  --plan tcw1-plan \
-  --name tcw1-backend \
-  --runtime "NODE|18-lts"
-
-# Create frontend app
-az webapp create \
-  --resource-group tcw1-rg \
-  --plan tcw1-plan \
-  --name tcw1-frontend \
-  --runtime "NODE|18-lts"
+# Build frontend
+cd ../frontend
+npm ci
+npm run build
 ```
 
 ### Step 2: Configure Environment Variables
@@ -50,24 +33,35 @@ DB_URL=your_database_url
 
 **Frontend (.env)**
 ```
-VITE_API_URL=https://tcw1-backend.azurewebsites.net
+VITE_API_URL=https://api.yourdomain.com
 ```
 
-### Step 3: Deploy from Git
+### Step 3: Deploy Your Applications
 
+Deploy the built files from `backend/dist` and `frontend/dist` to your hosting provider.
+
+#### Option A: Vercel (Recommended for Frontend)
 ```bash
-# Initialize git in project root
-cd TCW1
-git init
+cd frontend
+npm install -g vercel
+vercel --prod
+```
 
-# Add Azure remote
-az webapp deployment source config-zip \
-  --resource-group tcw1-rg \
-  --name tcw1-backend \
-  --src backend.zip
+#### Option B: Railway (Good for Backend)
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
 
-# Or use GitHub Actions (recommended)
-# See: github-deployment.yml
+# Login and deploy
+railway login
+railway up
+```
+
+#### Option C: Netlify
+```bash
+cd frontend
+npm install -g netlify-cli
+netlify deploy --prod --dir=dist
 ```
 
 ### Step 4: Configure Cloudflare DNS
@@ -75,106 +69,67 @@ az webapp deployment source config-zip \
 **For Backend API:**
 - Type: CNAME
 - Name: api
-- Content: `tcw1-backend.azurewebsites.net`
+- Content: `your-backend-host.provider.com`
 - TTL: Auto
-- Proxy Status: Proxied (orange cloud) ⚠️ May need DNS only
+- Proxy Status: Proxied (orange cloud)
 
 **For Frontend:**
 - Type: CNAME
 - Name: www
-- Content: `tcw1-frontend.azurewebsites.net`
+- Content: `your-frontend-host.provider.com`
 - TTL: Auto
 
 **Root Domain:**
-- Type: A
-- Content: Use Cloudflare's A record setup
-- Or CNAME: `tcw1-frontend.azurewebsites.net`
+- Type: A or CNAME
+- Content: Follow your hosting provider's instructions
 
-### Step 5: Configure Microsoft Email
+### Step 5: Configure Email Service
 
-#### Option A: Outlook.com Personal
+#### Option A: SendGrid
 ```
-SMTP Server: smtp-mail.outlook.com
-SMTP Port: 587
-Email: your-email@outlook.com
-Password: Your App Password (not regular password)
+SENDGRID_API_KEY=your_api_key
 ```
 
-#### Option B: Microsoft 365 Business
+#### Option B: Mailgun
 ```
-SMTP Server: smtp.office365.com
-SMTP Port: 587
-Email: your-email@yourdomain.com
-Password: Your Microsoft account password
+MAILGUN_API_KEY=your_api_key
+MAILGUN_DOMAIN=your_domain
 ```
 
-#### Option C: Azure Communication Services (Recommended)
-```bash
-# Create Azure Communication Services resource
-az communication-service create \
-  --name tcw1-email \
-  --resource-group tcw1-rg \
-  --location eastus
+#### Option C: SMTP (Gmail, Outlook, etc.)
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your_app_password
 ```
 
-### Step 6: Environment Variables in Azure Portal
+### Step 6: SSL/TLS Certificate
 
-Navigate to: App Service > Configuration > Application settings
+Most hosting providers (Vercel, Netlify, Railway) automatically provide SSL certificates.
 
-Add:
-- `AZURE_COMMUNICATION_CONNECTION_STRING`
-- `SENDER_EMAIL`
-- `CORS_ORIGIN`
-- `NODE_ENV=production`
-
-### Step 7: SSL/TLS Certificate
-
-1. In Azure: App Service > TLS/SSL settings
-2. Add managed certificate for your domain
-3. In Cloudflare: SSL/TLS > Full (Strict)
+In Cloudflare: SSL/TLS > Full (Strict)
 
 ---
 
-## 🌐 Alternative: Vercel + Azure VM
-
-### Frontend on Vercel (Free)
-```bash
-cd frontend
-npm install -g vercel
-vercel --prod
-```
-
-### Backend on Azure VM
-```bash
-# Create VM
-az vm create \
-  --resource-group tcw1-rg \
-  --name tcw1-vm \
-  --image UbuntuLTS \
-  --admin-username azureuser \
-  --generate-ssh-keys
-
-# SSH into VM and deploy Node.js app
-ssh azureuser@<vm-ip>
-git clone your-repo
-cd TCW1/backend
-npm ci --production
-npm start  # Use PM2 for process management
-```
-
----
-
-## 📧 Email Setup with Microsoft
+## 📧 Email Setup
 
 ### Add Email to Your App
 
 **Create: backend/src/services/email.service.ts**
 
 ```typescript
-import { EmailClient } from "@azure/communication-email";
+import nodemailer from 'nodemailer';
 
-const connectionString = process.env.AZURE_COMMUNICATION_CONNECTION_STRING!;
-const client = new EmailClient(connectionString);
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 export async function sendTransactionEmail(
   userEmail: string,
@@ -182,27 +137,23 @@ export async function sendTransactionEmail(
   currency: string,
   recipient: string
 ) {
-  await client.send({
-    senderAddress: process.env.SENDER_EMAIL!,
-    recipients: {
-      to: [{ address: userEmail }],
-    },
-    content: {
-      subject: `Payment Sent: ${amount} ${currency}`,
-      html: `
-        <h2>Payment Confirmation</h2>
-        <p>Amount: ${amount} ${currency}</p>
-        <p>Recipient: ${recipient}</p>
-        <p>Thank you for using TCW1!</p>
-      `,
-    },
+  await transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to: userEmail,
+    subject: `Payment Sent: ${amount} ${currency}`,
+    html: `
+      <h2>Payment Confirmation</h2>
+      <p>Amount: ${amount} ${currency}</p>
+      <p>Recipient: ${recipient}</p>
+      <p>Thank you for using TCW1!</p>
+    `,
   });
 }
 ```
 
 Install package:
 ```bash
-npm install @azure/communication-email
+npm install nodemailer
 ```
 
 ---
@@ -211,7 +162,7 @@ npm install @azure/communication-email
 
 - [ ] Set `NODE_ENV=production`
 - [ ] Enable CORS only for your domain
-- [ ] Store secrets in Azure Key Vault (not .env)
+- [ ] Store secrets in environment variables (not .env files in production)
 - [ ] Enable SSL/TLS (HTTPS only)
 - [ ] Set HTTPS redirect in Cloudflare
 - [ ] Enable firewall rules for API
@@ -223,7 +174,7 @@ npm install @azure/communication-email
 ## 🚨 Troubleshooting
 
 **App shows blank?**
-- Check: Azure > Monitoring > Log Stream
+- Check: Hosting provider logs
 - Check: Browser Console for CORS errors
 
 **Can't connect to backend?**
@@ -232,17 +183,16 @@ npm install @azure/communication-email
 - Test: `curl https://api.yourdomain.com/health`
 
 **Email not sending?**
-- Verify connection string in Azure Portal
-- Check: Sender email is verified
-- Check: App Service managed identity has permissions
+- Verify SMTP credentials
+- Check: Email service provider status
+- Check: Environment variables are set correctly
 
 ---
 
 ## ✅ What's Next After Deployment?
 
-1. ✅ Set up auto-scaling (important for production)
-2. ✅ Configure application insights for monitoring
-3. ✅ Set up CI/CD with GitHub Actions
-4. ✅ Enable backup for database
-5. ✅ Add custom domain SSL certificate
-6. ✅ Set up email notifications for transactions
+1. ✅ Set up monitoring (e.g., Sentry, LogRocket)
+2. ✅ Configure CI/CD with GitHub Actions
+3. ✅ Enable backup for database
+4. ✅ Add custom domain SSL certificate
+5. ✅ Set up email notifications for transactions

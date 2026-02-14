@@ -22,7 +22,7 @@ cp frontend/.env.production.template frontend/.env.production
 
 # 2. Edit both .env.production files with your values
 # - YOUR_DOMAIN
-# - MICROSFT_EMAIL
+# - MICROSOFT_EMAIL
 # - APP_KEYS
 
 # Frontend API base URL (important for login/signup)

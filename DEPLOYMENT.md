@@ -74,7 +74,7 @@ netlify deploy --prod --dir=dist
 - Proxy Status: Proxied (orange cloud)
 
 **For Frontend:**
-- Type: CNAME  
+- Type: CNAME
 - Name: www
 - Content: `your-frontend-host.provider.com`
 - TTL: Auto

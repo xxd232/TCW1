@@ -102,7 +102,7 @@ Click **Save** → Wait for restart
 
 1. Click **+ Add custom domain**
 2. Enter: `tcw1.org` → **Validate** → **Add**
-3. Click **+ Add custom domain**  
+3. Click **+ Add custom domain**
 4. Enter: `www.tcw1.org` → **Validate** → **Add**
 
 ### Backend Domain
@@ -158,7 +158,7 @@ https://tcw1.org
 
 ```
 ✅ Website:  https://tcw1.org
-✅ API:      https://api.tcw1.org  
+✅ API:      https://api.tcw1.org
 ✅ Email:    noreply@tcw1.org
 ✅ Status:   Production Ready
 ```

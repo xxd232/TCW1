@@ -21,6 +21,7 @@ A full-stack interactive web application for managing cryptocurrency and PayPal 
 - [Features Demo](#features-demo)
 - [Security Notes](#security-notes)
 - [Development](#development)
+- [Troubleshooting](#troubleshooting)
 - [License](#license)
 - [Contributing](#contributing)
 - [Support](#support)
@@ -93,7 +94,40 @@ TCW1/
 
 ## Quick Start
 
-Get up and running in 3 simple steps:
+### 📂 Locating Your Project
+
+After cloning the repository, you need to navigate to the project folder. Here's how:
+
+**Windows:**
+```bash
+# If you cloned to your home directory
+cd C:\Users\YourUsername\TCW1
+
+# Or if you cloned to Documents
+cd C:\Users\YourUsername\Documents\TCW1
+```
+
+**macOS/Linux:**
+```bash
+# If you cloned to your home directory
+cd ~/TCW1
+
+# Or if you cloned to a specific location
+cd /path/to/where/you/cloned/TCW1
+```
+
+> **💡 Can't find your project?** 
+> - Open your terminal/command prompt
+> - Type `cd` and press Enter to go to your home directory
+> - Type `dir` (Windows) or `ls` (macOS/Linux) to see folders
+> - Look for the `TCW1` folder
+> - If still can't find it, try searching for "TCW1" in your file explorer
+
+Once you're in the project folder, you should see two main folders:
+- `backend/` - Contains the server code
+- `frontend/` - Contains the user interface code
+
+### 🚀 Get up and running in 3 simple steps:
 
 1. **Install dependencies**
    ```bash
@@ -124,19 +158,53 @@ Get up and running in 3 simple steps:
 ### Prerequisites
 
 Before you begin, ensure you have the following installed:
+- **Git** (for cloning the repository)
 - **Node.js** (version 18.0.0 or higher)
 - **npm** (comes with Node.js)
 
 You can verify your installations by running:
 ```bash
+git --version   # Should output your Git version
 node --version  # Should output v18.0.0 or higher
 npm --version   # Should output a version number
 ```
 
+### Getting the Project
+
+**Step 1: Clone the repository**
+```bash
+# Clone to your preferred location
+git clone https://github.com/xxd232/TCW1.git
+
+# Navigate into the project folder
+cd TCW1
+```
+
+**Step 2: Verify project structure**
+```bash
+# List the contents (you should see backend and frontend folders)
+ls          # macOS/Linux
+dir         # Windows
+```
+
+Expected output:
+```
+backend/
+frontend/
+README.md
+.gitignore
+```
+
 ### Backend Setup
 
+**Navigate to the backend folder:**
 ```bash
+# Make sure you're in the TCW1 project root first
 cd backend
+```
+
+**Install dependencies:**
+```bash
 npm install
 ```
 
@@ -158,12 +226,21 @@ The API will be available at `http://localhost:3001`
 
 ### Frontend Setup
 
+**Navigate to the frontend folder:**
 ```bash
+# If you're still in the backend folder
+cd ../frontend
+
+# Or if you're in the TCW1 project root
 cd frontend
+```
+
+**Install dependencies:**
+```bash
 npm install
 ```
 
-Start the development server:
+**Start the development server:**
 ```bash
 npm run dev
 ```
@@ -289,6 +366,101 @@ MIT
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## Troubleshooting
+
+### Can't find the project folder?
+
+**Problem:** You cloned the repository but can't locate the `TCW1` folder on your computer.
+
+**Solutions:**
+
+1. **Check your current location:**
+   ```bash
+   # Show your current directory
+   pwd                    # macOS/Linux
+   cd                     # Windows (shows current drive and path)
+   ```
+
+2. **Search your computer:**
+   - **Windows:** Open File Explorer, search for "TCW1" in the search bar
+   - **macOS:** Use Spotlight (Cmd + Space), type "TCW1"
+   - **Linux:** Use file manager's search or run `find ~ -name "TCW1" -type d 2>/dev/null`
+
+3. **Re-clone if needed:**
+   ```bash
+   # Navigate to where you want the project
+   cd ~/Documents          # Or any preferred location
+   
+   # Clone the repository
+   git clone https://github.com/xxd232/TCW1.git
+   
+   # Navigate into the project
+   cd TCW1
+   ```
+
+4. **Verify you're in the right folder:**
+   ```bash
+   # You should see backend and frontend folders
+   ls                      # macOS/Linux
+   dir                     # Windows
+   ```
+
+### Backend or Frontend folder not found?
+
+If you're inside the `TCW1` folder but can't find `backend` or `frontend`:
+
+```bash
+# Verify you're in the project root
+ls -la                  # macOS/Linux
+dir                     # Windows
+
+# You should see:
+# - backend/
+# - frontend/
+# - README.md
+# - .gitignore
+```
+
+If these folders are missing, try pulling the latest changes:
+```bash
+git pull origin main
+```
+
+### Installation errors?
+
+**Problem:** `npm install` fails with errors.
+
+**Solution:**
+```bash
+# Make sure you're in the correct directory
+cd backend              # For backend
+# OR
+cd frontend             # For frontend
+
+# Then run
+npm install
+```
+
+### Port already in use?
+
+**Problem:** Server won't start because port 3000 or 3001 is already in use.
+
+**Solution:**
+```bash
+# Find and kill the process using the port
+# macOS/Linux:
+lsof -ti:3000 | xargs kill -9        # For frontend
+lsof -ti:3001 | xargs kill -9        # For backend
+
+# Windows:
+netstat -ano | findstr :3000         # Find PID
+taskkill /PID <PID> /F               # Kill the process
+```
+
+Or modify the port in the configuration files.
 
 ---
 

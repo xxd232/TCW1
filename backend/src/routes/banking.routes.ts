@@ -121,6 +121,17 @@ router.post('/deposit', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Amount must be positive' });
     }
 
+    // Security: Set maximum transfer limits
+    const MAX_ACH_AMOUNT = 100000; // $100,000
+    const MAX_WIRE_AMOUNT = 1000000; // $1,000,000
+    const maxAmount = transferType === 'WIRE' ? MAX_WIRE_AMOUNT : MAX_ACH_AMOUNT;
+    
+    if (amount > maxAmount) {
+      return res.status(400).json({ 
+        error: `Amount exceeds maximum ${transferType} transfer limit of $${maxAmount.toLocaleString()}` 
+      });
+    }
+
     if (!['ACH', 'WIRE'].includes(transferType)) {
       return res.status(400).json({ error: 'Invalid transfer type' });
     }
@@ -161,6 +172,17 @@ router.post('/withdraw', async (req: Request, res: Response) => {
 
     if (amount <= 0) {
       return res.status(400).json({ error: 'Amount must be positive' });
+    }
+
+    // Security: Set maximum transfer limits
+    const MAX_ACH_AMOUNT = 100000; // $100,000
+    const MAX_WIRE_AMOUNT = 1000000; // $1,000,000
+    const maxAmount = transferType === 'WIRE' ? MAX_WIRE_AMOUNT : MAX_ACH_AMOUNT;
+    
+    if (amount > maxAmount) {
+      return res.status(400).json({ 
+        error: `Amount exceeds maximum ${transferType} transfer limit of $${maxAmount.toLocaleString()}` 
+      });
     }
 
     if (!['ACH', 'WIRE'].includes(transferType)) {

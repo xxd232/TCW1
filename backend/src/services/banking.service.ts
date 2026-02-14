@@ -128,6 +128,7 @@ export class BankingService {
 
       // Simulate transfer processing time
       // In production, this would involve actual ACH/Wire transfer processing
+      // TODO: Replace with proper job queue system (Bull/BullMQ) for production
       setTimeout(async () => {
         try {
           // Add funds to wallet
@@ -152,6 +153,7 @@ export class BankingService {
             );
           }
         } catch (error: any) {
+          console.error('Bank deposit processing error:', error);
           await BankTransaction.updateOne(
             { _id: saved._id },
             { status: 'failed', failureReason: error.message }
@@ -219,6 +221,7 @@ export class BankingService {
       const saved = await bankTransaction.save();
 
       // Simulate transfer processing
+      // TODO: Replace with proper job queue system for production
       setTimeout(async () => {
         try {
           // Update transaction status
@@ -233,6 +236,7 @@ export class BankingService {
             { lastUsed: new Date() }
           );
         } catch (error: any) {
+          console.error('Bank withdrawal processing error:', error);
           // Refund on failure
           if (wallet) {
             wallet.balances.USD += request.amount;
@@ -308,10 +312,9 @@ export class BankingService {
 
   // Helper: Mask account number for display
   private maskAccountNumber(accountNumber: string): string {
-    if (accountNumber.length <= 4) {
-      return accountNumber;
-    }
-    return '****' + accountNumber.slice(-4);
+    // Always mask for security, showing only last 4 digits
+    const last4 = accountNumber.slice(-4);
+    return '****' + last4;
   }
 }
 

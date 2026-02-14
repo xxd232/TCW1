@@ -80,7 +80,7 @@ az webapp deployment source config-zip \
 - Proxy Status: Proxied (orange cloud) ⚠️ May need DNS only
 
 **For Frontend:**
-- Type: CNAME  
+- Type: CNAME
 - Name: www
 - Content: `tcw1-frontend.azurewebsites.net`
 - TTL: Auto

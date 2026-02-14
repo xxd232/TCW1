@@ -292,7 +292,7 @@
                │                               │
      Concurrent:                   Concurrent:
      10-50 users                    1000+ users
-     
+
      ┌──────────────────────┐        ┌──────────────────────────┐
      │ SQLite / File DB     │        │ Azure SQL Database       │
      │ (Development)        │        │ (Production)             │
@@ -301,7 +301,7 @@
                │                               │
      Storage:                    Storage:
      App Service (local)         Azure Storage (distributed)
-     
+
      ┌──────────────────────┐        ┌──────────────────────────┐
      │ No CDN               │        │ Cloudflare CDN           │
      │ Direct origin access │        │ 200+ edge locations      │

@@ -165,7 +165,7 @@ Repeat for:
 ```
 + Add record
 Type: MX
-Name: @ 
+Name: @
 Mail server: outlook-com.olc.protection.outlook.com
 Priority: 10
 Save

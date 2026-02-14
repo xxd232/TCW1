@@ -25,13 +25,13 @@ You have been provided with **4 deployment guides** in your project:
 ## 🎯 What You're Getting
 
 ### TCW1 Application Features
-✅ Cryptocurrency Wallet (BTC, ETH, USDT)  
-✅ PayPal Integration  
-✅ Real-time Chat & Video Calls (WebRTC)  
-✅ Transaction History & Analytics  
-✅ Friend Management  
-✅ Crypto Price Charts  
-✅ Animated UI with Toast Notifications  
+✅ Cryptocurrency Wallet (BTC, ETH, USDT)
+✅ PayPal Integration
+✅ Real-time Chat & Video Calls (WebRTC)
+✅ Transaction History & Analytics
+✅ Friend Management
+✅ Crypto Price Charts
+✅ Animated UI with Toast Notifications
 
 ### Deployment Stack
 ```

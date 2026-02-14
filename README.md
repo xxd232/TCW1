@@ -116,7 +116,7 @@ cd ~/TCW1
 cd /path/to/where/you/cloned/TCW1
 ```
 
-> **💡 Can't find your project?** 
+> **💡 Can't find your project?**
 > - Open your terminal/command prompt
 > - Type `cd` and press Enter to go to your home directory
 > - Type `dir` (Windows) or `ls` (macOS/Linux) to see folders
@@ -133,7 +133,7 @@ Once you're in the project folder, you should see two main folders:
    ```bash
    # Backend
    cd backend && npm install
-   
+
    # Frontend (in a new terminal)
    cd frontend && npm install
    ```
@@ -142,7 +142,7 @@ Once you're in the project folder, you should see two main folders:
    ```bash
    # Backend (from backend directory)
    npm run dev
-   
+
    # Frontend (from frontend directory, in a new terminal)
    npm run dev
    ```
@@ -393,10 +393,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
    ```bash
    # Navigate to where you want the project
    cd ~/Documents          # Or any preferred location
-   
+
    # Clone the repository
    git clone https://github.com/xxd232/TCW1.git
-   
+
    # Navigate into the project
    cd TCW1
    ```

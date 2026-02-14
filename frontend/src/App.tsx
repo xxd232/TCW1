@@ -5,6 +5,10 @@ import { SendPayment } from './components/SendPayment';
 import { ReceivePayment } from './components/ReceivePayment';
 import { TransactionHistory } from './components/TransactionHistory';
 import { AdminDashboard } from './components/AdminDashboard';
+import { BankAccounts } from './components/BankAccounts';
+import { BankDeposit } from './components/BankDeposit';
+import { BankWithdrawal } from './components/BankWithdrawal';
+import { BankTransactions } from './components/BankTransactions';
 import Chat from './components/Chat';
 import VideoCall from './components/VideoCall';
 import SignUp from './components/SignUp';
@@ -39,7 +43,7 @@ function App() {
   const [chatRecipient, setChatRecipient] = useState('');
   const [callRecipient, setCallRecipient] = useState('');
   const [activeMenu, setActiveMenu] = useState<
-    'wallet' | 'receive' | 'send' | 'history' | 'chat' | 'video' | 'settings' | 'exchange' | 'notifications' | 'help' | 'admin' | null
+    'wallet' | 'receive' | 'send' | 'history' | 'chat' | 'video' | 'settings' | 'exchange' | 'notifications' | 'help' | 'admin' | 'banking' | null
   >(null);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [newFriendId, setNewFriendId] = useState('');
@@ -75,7 +79,7 @@ function App() {
   };
 
   const toggleMenu = (
-    key: 'wallet' | 'receive' | 'send' | 'history' | 'chat' | 'video' | 'settings' | 'exchange' | 'notifications' | 'help' | 'admin'
+    key: 'wallet' | 'receive' | 'send' | 'history' | 'chat' | 'video' | 'settings' | 'exchange' | 'notifications' | 'help' | 'admin' | 'banking'
   ) => {
     setActiveMenu(prev => (prev === key ? null : key));
   };
@@ -317,6 +321,13 @@ function App() {
             <span className="sidebar-text">History</span>
           </button>
           <button
+            className={`sidebar-item ${activeMenu === 'banking' ? 'active' : ''}`}
+            onClick={() => { toggleMenu('banking'); setShowSidebar(false); }}
+          >
+            <span className="sidebar-icon">🏦</span>
+            <span className="sidebar-text">Banking</span>
+          </button>
+          <button
             className={`sidebar-item ${activeMenu === 'chat' ? 'active' : ''}`}
             onClick={() => { toggleMenu('chat'); setShowSidebar(false); }}
           >
@@ -401,6 +412,37 @@ function App() {
           <section className="feature-panel">
             <div className="panel-content">
               <TransactionHistory userId={userId} refresh={refreshKey} />
+            </div>
+          </section>
+        )}
+
+        {activeMenu === 'banking' && (
+          <section className="feature-panel">
+            <div className="panel-content banking-panel">
+              <div className="banking-tabs">
+                <h2>🏦 Banking</h2>
+                <p className="banking-subtitle">Link your bank account for deposits and withdrawals</p>
+              </div>
+              
+              <div className="banking-sections">
+                <div className="banking-section">
+                  <BankAccounts userId={userId} />
+                </div>
+                
+                <div className="banking-transfers">
+                  <div className="banking-section">
+                    <BankDeposit userId={userId} onSuccess={handleTransactionSuccess} />
+                  </div>
+                  
+                  <div className="banking-section">
+                    <BankWithdrawal userId={userId} onSuccess={handleTransactionSuccess} />
+                  </div>
+                </div>
+                
+                <div className="banking-section">
+                  <BankTransactions userId={userId} />
+                </div>
+              </div>
             </div>
           </section>
         )}

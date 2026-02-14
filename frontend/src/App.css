@@ -1248,3 +1248,49 @@ body {
     font-size: 1.3rem;
   }
 }
+
+/* Banking Section Styles */
+.banking-panel {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.banking-tabs {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.banking-tabs h2 {
+  color: #FFD700;
+  margin-bottom: 8px;
+}
+
+.banking-subtitle {
+  color: #CCCCCC;
+  font-size: 1rem;
+}
+
+.banking-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.banking-transfers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.banking-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+@media (max-width: 1024px) {
+  .banking-transfers {
+    grid-template-columns: 1fr;
+  }
+}

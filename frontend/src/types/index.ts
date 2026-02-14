@@ -1,4 +1,4 @@
-export type Currency = 'BTC' | 'USDT' | 'ETH' | 'PAYPAL';
+export type Currency = 'BTC' | 'USDT' | 'ETH' | 'PAYPAL' | 'USD';
 
 export interface Wallet {
   userId: string;
@@ -7,6 +7,7 @@ export interface Wallet {
     USDT: number;
     ETH: number;
     PAYPAL: number;
+    USD: number;
   };
 }
 
@@ -28,4 +29,32 @@ export interface CryptoPrices {
   ETH: number;
   USDT: number;
   currency: string;
+}
+
+export interface BankAccount {
+  id: string;
+  userId: string;
+  accountNumber: string;
+  routingNumber: string;
+  accountType: 'checking' | 'savings';
+  bankName: string;
+  accountHolderName: string;
+  isVerified: boolean;
+  isPrimary: boolean;
+  createdAt: string;
+  lastUsed?: string;
+}
+
+export interface BankTransaction {
+  id: string;
+  userId: string;
+  bankAccountId: string;
+  type: 'deposit' | 'withdrawal';
+  amount: number;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  transferType: 'ACH' | 'WIRE';
+  description?: string;
+  timestamp: string;
+  completedAt?: string;
+  failureReason?: string;
 }

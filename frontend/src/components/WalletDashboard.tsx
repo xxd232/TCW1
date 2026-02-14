@@ -53,7 +53,7 @@ export const WalletDashboard: React.FC<WalletDashboardProps> = ({ userId }) => {
   };
 
   const getUSDValue = (amount: number, currency: Currency): string => {
-    if (currency === 'PAYPAL') return amount.toFixed(2);
+    if (currency === 'PAYPAL' || currency === 'USD') return amount.toFixed(2);
     const price = prices[currency as keyof typeof prices];
     if (typeof price === 'number') {
       return (amount * price).toFixed(2);
@@ -81,9 +81,10 @@ export const WalletDashboard: React.FC<WalletDashboardProps> = ({ userId }) => {
       </div>
 
       <div className="balances-grid">
-        {(['BTC', 'ETH', 'USDT', 'PAYPAL'] as Currency[]).map((currency) => (
+        {(['USD', 'BTC', 'ETH', 'USDT', 'PAYPAL'] as Currency[]).map((currency) => (
           <div key={currency} className="balance-card">
             <div className="currency-icon">
+              {currency === 'USD' && '💵'}
               {currency === 'BTC' && '₿'}
               {currency === 'ETH' && 'Ξ'}
               {currency === 'USDT' && '₮'}
@@ -94,9 +95,11 @@ export const WalletDashboard: React.FC<WalletDashboardProps> = ({ userId }) => {
               <p className="balance-amount">
                 {formatBalance(wallet.balances[currency], currency)}
               </p>
-              <p className="usd-value">
-                ≈ ${getUSDValue(wallet.balances[currency], currency)} USD
-              </p>
+              {currency !== 'USD' && (
+                <p className="usd-value">
+                  ≈ ${getUSDValue(wallet.balances[currency], currency)} USD
+                </p>
+              )}
             </div>
           </div>
         ))}

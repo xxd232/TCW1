@@ -218,7 +218,7 @@ class AuthService {
   async disableTwoFactor(userId: string, password: string): Promise<AuthResponse> {
     try {
       const user = await User.findById(userId);
-      if (!user || !(await bcrypt.compare(password, user.password))) {
+      if (!user || !user.password || !(await bcrypt.compare(password, user.password))) {
         return { success: false, message: 'Invalid password' };
       }
 
@@ -251,7 +251,7 @@ class AuthService {
   async changePassword(userId: string, oldPassword: string, newPassword: string): Promise<AuthResponse> {
     try {
       const user = await User.findById(userId);
-      if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+      if (!user || !user.password || !(await bcrypt.compare(oldPassword, user.password))) {
         return { success: false, message: 'Invalid current password' };
       }
 
@@ -279,7 +279,7 @@ class AuthService {
     try {
       const user = await User.findOne({ email: email.toLowerCase() });
 
-      if (!user || !(await bcrypt.compare(password, user.password))) {
+      if (!user || !user.password || !(await bcrypt.compare(password, user.password))) {
         return { success: false, message: 'Invalid credentials' };
       }
 

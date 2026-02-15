@@ -315,7 +315,7 @@ This is primarily a demonstration application. For production use, implement:
 ### Resources
 - Project Issues: https://github.com/xxd232/TCW1/issues
 - Documentation: See docs in repository root
-- Azure Docs: https://docs.microsoft.com/azure
+- Azure Docs: https://learn.microsoft.com/azure
 - React Docs: https://react.dev
 - Express Docs: https://expressjs.com
 

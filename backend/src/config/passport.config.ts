@@ -6,8 +6,11 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
 
+// Export flag to indicate if Google OAuth is configured
+export const isGoogleOAuthConfigured = !!(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET);
+
 // Only configure Google OAuth if credentials are provided
-if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
+if (isGoogleOAuthConfigured) {
   passport.use(
     new GoogleStrategy(
       {

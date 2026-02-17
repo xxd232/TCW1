@@ -1,5 +1,5 @@
 import express, { Router, Request, Response } from 'express';
-import passport from '../config/passport.config';
+import passport, { isGoogleOAuthConfigured } from '../config/passport.config';
 import { authService } from '../services/auth.service';
 import { authMiddleware, AuthRequest } from '../middleware/auth.middleware';
 import { IUser } from '../models/User';
@@ -97,7 +97,7 @@ router.get('/verify', authMiddleware, async (req: AuthRequest, res: Response) =>
 router.get('/google', 
   (req: Request, res: Response, next) => {
     // Check if Google OAuth is configured
-    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    if (!isGoogleOAuthConfigured) {
       return res.status(503).json({ 
         success: false, 
         message: 'Google OAuth is not configured on this server' 
@@ -114,7 +114,7 @@ router.get('/google',
 router.get('/google/callback',
   (req: Request, res: Response, next) => {
     // Check if Google OAuth is configured
-    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    if (!isGoogleOAuthConfigured) {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
       return res.redirect(`${frontendUrl}/login?error=oauth_not_configured`);
     }

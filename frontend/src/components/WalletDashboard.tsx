@@ -1,3 +1,242 @@
+// --- Manual Form ---
+const ManualForm = ({ userId, type, onResult, loading, setLoading, onClose }: any) => {
+  const [reference, setReference] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      // Simulate backend submission
+      await new Promise(res => setTimeout(res, 1200));
+      onResult((type === 'deposit' ? 'Deposit' : 'Withdrawal') + ' request submitted for manual review!');
+      setSuccess(true);
+    } catch (e: any) {
+      onResult('Submission failed: ' + (e?.message || 'Unknown error'));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>{type === 'deposit' ? 'Manual Deposit' : 'Manual Withdrawal'}</h4>
+      <div style={{fontSize:'0.95rem',marginBottom:8}}>Please follow the instructions below and upload proof or enter a reference number. Our team will review and approve your request.</div>
+      <input type="text" placeholder="Reference Number" className="deposit-input" value={reference} onChange={e => setReference(e.target.value)} disabled={loading} />
+      <input type="file" className="deposit-input" onChange={e => setFile(e.target.files?.[0] || null)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || (!reference && !file)}>{loading ? 'Submitting...' : 'Submit'}</button>
+    </form>
+  );
+};
+
+// --- Deposit Forms ---
+const DepositCardForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.deposit(userId, 'USD', Number(amount));
+      onResult('Deposit successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Deposit failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Deposit via Card</h4>
+      <input type="text" placeholder="Card Number" className="deposit-input" disabled={loading} />
+      <input type="text" placeholder="Expiry (MM/YY)" className="deposit-input" disabled={loading} />
+      <input type="text" placeholder="CVV" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Deposit'}</button>
+    </form>
+  );
+};
+
+const DepositPayPalForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.deposit(userId, 'PAYPAL', Number(amount));
+      onResult('Deposit successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Deposit failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Deposit via PayPal</h4>
+      <input type="email" placeholder="PayPal Email" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Deposit'}</button>
+    </form>
+  );
+};
+
+const DepositACHForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [success, setSuccess] = useState(false);
+  const bankAccountId = 'demo-bank';
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.depositFromBank(userId, bankAccountId, Number(amount), 'ACH');
+      onResult('Deposit successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Deposit failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Deposit via Plaid/ACH</h4>
+      <input type="text" placeholder="Routing Number" className="deposit-input" disabled={loading} />
+      <input type="text" placeholder="Account Number" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Deposit'}</button>
+    </form>
+  );
+};
+
+const DepositCryptoForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState<'BTC' | 'ETH' | 'USDT'>('BTC');
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.deposit(userId, currency, Number(amount));
+      onResult('Deposit successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Deposit failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Deposit via Crypto</h4>
+      <select className="deposit-input" value={currency} onChange={e => setCurrency(e.target.value as any)} disabled={loading}>
+        <option value="BTC">BTC</option>
+        <option value="ETH">ETH</option>
+        <option value="USDT">USDT</option>
+      </select>
+      <input type="text" placeholder="Crypto Address" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Deposit'}</button>
+    </form>
+  );
+};
+
+// --- Withdraw Forms ---
+const WithdrawCardForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.withdrawToBank(userId, 'demo-card', Number(amount), 'ACH');
+      onResult('Withdrawal successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Withdrawal failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Withdraw to Card</h4>
+      <input type="text" placeholder="Card Number" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Withdraw'}</button>
+    </form>
+  );
+};
+
+const WithdrawPayPalForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.withdrawToBank(userId, 'demo-paypal', Number(amount), 'ACH');
+      onResult('Withdrawal successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Withdrawal failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Withdraw to PayPal</h4>
+      <input type="email" placeholder="PayPal Email" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Withdraw'}</button>
+    </form>
+  );
+};
+
+const WithdrawACHForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.withdrawToBank(userId, 'demo-ach', Number(amount), 'ACH');
+      onResult('Withdrawal successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Withdrawal failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Withdraw via Plaid/ACH</h4>
+      <input type="text" placeholder="Routing Number" className="deposit-input" disabled={loading} />
+      <input type="text" placeholder="Account Number" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Withdraw'}</button>
+    </form>
+  );
+};
+
+const WithdrawCryptoForm = ({ userId, onResult, loading, setLoading, onClose }: any) => {
+  const [amount, setAmount] = useState('');
+  const [currency, setCurrency] = useState<'BTC' | 'ETH' | 'USDT'>('BTC');
+  const [success, setSuccess] = useState(false);
+  useEffect(() => { if (success) setTimeout(onClose, 1200); }, [success]);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); onResult(null);
+    try {
+      await api.withdrawToBank(userId, 'demo-crypto', Number(amount), 'ACH');
+      onResult('Withdrawal successful!'); setSuccess(true);
+    } catch (e: any) {
+      onResult('Withdrawal failed: ' + (e?.response?.data?.error || e.message));
+    } finally { setLoading(false); }
+  };
+  return (
+    <form className="deposit-form" onSubmit={handleSubmit}>
+      <h4>Withdraw via Crypto</h4>
+      <select className="deposit-input" value={currency} onChange={e => setCurrency(e.target.value as any)} disabled={loading}>
+        <option value="BTC">BTC</option>
+        <option value="ETH">ETH</option>
+        <option value="USDT">USDT</option>
+      </select>
+      <input type="text" placeholder="Crypto Address" className="deposit-input" disabled={loading} />
+      <input type="number" placeholder="Amount" className="deposit-input" value={amount} onChange={e => setAmount(e.target.value)} disabled={loading} />
+      <button className="btn-action" type="submit" disabled={loading || !amount}>{loading ? 'Processing...' : 'Withdraw'}</button>
+    </form>
+  );
+};
 import { useState, useEffect, FormEvent } from 'react';
 import Modal from './Modal';
 import { Wallet, Currency } from '../types';

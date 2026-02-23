@@ -185,6 +185,7 @@ const Chat: React.FC<ChatProps> = ({ currentUserId, recipientId, onClose }) => {
               </div>
             </div>
           ))
+        )}
         <div ref={messagesEndRef} />
       </div>
       

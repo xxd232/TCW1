@@ -73,90 +73,37 @@ const SignUp = ({ onSignUp, onShowLogin }: SignUpProps) => {
   };
 
   return (
-    <div className="signup-container">
-      <div className="signup-box">
-        <div className="signup-header">
-          <h1 className="signup-title">TCW1</h1>
-          <p className="signup-subtitle">Create Your Account</p>
+    <div style={{ maxWidth: 400, margin: '40px auto', padding: 16, background: '#fff', color: '#222', borderRadius: 8, boxShadow: '0 2px 8px #eee' }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Sign Up</h2>
+      <form onSubmit={handleSubmit}>
+        {error && <div style={{ color: 'red', marginBottom: 8 }}>{error}</div>}
+        <div style={{ marginBottom: 8 }}>
+          <label>First Name</label>
+          <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={loading} style={{ width: '100%', padding: 6 }} />
         </div>
-
-        <form onSubmit={handleSubmit} className="signup-form">
-          {error && <div className="error-message">{error}</div>}
-
-          <div className="form-row">
-            <div className="form-group">
-              <label>First Name</label>
-              <input
-                type="text"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="John"
-                disabled={loading}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Last Name</label>
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="Doe"
-                disabled={loading}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label>Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••••"
-              required
-              disabled={loading}
-            />
-            <p className="help-text">At least 8 characters</p>
-          </div>
-
-          <div className="form-group">
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••••"
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <button type="submit" className="signup-btn" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <div className="signup-footer">
-          <p>
-            Already have an account?{' '}
-            <button type="button" className="link-button" onClick={onShowLogin}>
-              Login here
-            </button>
-          </p>
+        <div style={{ marginBottom: 8 }}>
+          <label>Last Name</label>
+          <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} disabled={loading} style={{ width: '100%', padding: 6 }} />
         </div>
+        <div style={{ marginBottom: 8 }}>
+          <label>Email</label>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} disabled={loading} style={{ width: '100%', padding: 6 }} />
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <label>Password</label>
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} disabled={loading} style={{ width: '100%', padding: 6 }} />
+        </div>
+        <div style={{ marginBottom: 8 }}>
+          <label>Confirm Password</label>
+          <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} disabled={loading} style={{ width: '100%', padding: 6 }} />
+        </div>
+        <button type="submit" style={{ width: '100%', padding: 10, background: '#222', color: '#fff', border: 'none', borderRadius: 4 }} disabled={loading}>
+          {loading ? 'Creating Account...' : 'Create Account'}
+        </button>
+      </form>
+      <div style={{ marginTop: 16, textAlign: 'center' }}>
+        <span>Already have an account?</span>
+        <button type="button" style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', marginLeft: 4 }} onClick={onShowLogin}>Login</button>
       </div>
     </div>
   );
